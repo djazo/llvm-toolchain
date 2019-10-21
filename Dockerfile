@@ -49,4 +49,9 @@ ENV PATH="/opt/toolchain/bin:${PATH}"
 
 COPY --from=bob /opt/toolchain /opt/toolchain
 
+RUN apk add --no-cache $(scanelf --needed \
+	--nobanner --format '%n#p' --recursive /opt/toolchain \
+	| tr ',' '\n' \
+	| sort -u \
+	| awk 'system("[ -e /opt/toolchain/lib" $1 " ]") == 0 { next } { print "so:" $1 }')
 
