@@ -1,57 +1,75 @@
-FROM alpine:3.10.2 AS bob
+# Dockerfile to build toolchain for alpine targets x86, armv7 and aarch64
 
-RUN apk add --no-cache \
-	bison \
-	build-base \
-	ca-certificates \
-	cmake \
-	curl \
-	file \
-	flex \
-	git \
-	ninja \
-	python3
+FROM alpine:3.10.3 AS bob
 
-ENV LLVM_VERSION 9.0.0
+# start by adding basic toolchains for initial build
 
-# get sources for llvm
+RUN apk update && apk upgrade && \
+  apk add --no-cache \
+  binutils \
+  binutils-gold \
+  cmake \
+  g++ \
+  gcc \
+  git \
+  libc-dev \
+  libedit-dev \
+  libffi-dev \
+  libxml2-dev \
+  linux-headers \
+  ninja \
+  openssl-dev \
+  python3 \
+  swig \
+  xz-dev \
+  z3-dev
 
-RUN mkdir -p /tmp/src ; \
-	cd /tmp/src ; \
-	git clone --depth 1 --branch llvmorg-${LLVM_VERSION} https://github.com/llvm/llvm-project.git
 
-# configure
+# populate sysroots
 
-RUN mkdir -p /tmp/build ; \
-	cd /tmp/build ; \
-	cmake -G Ninja /tmp/src/llvm-project/llvm \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX=/opt/toolchain \
-	-DLLVM_TARGETS_TO_BUILD="AArch64;ARM" \
-	-DLLVM_ENABLE_PROJECTS="clang;lld"
+RUN mkdir -p /var/sysroots && \
+  apk --arch x86_64 -X http://dl-4.alpinelinux.org/alpine/edge/main -U --allow-untrusted --root /var/sysroots/x86_64 --initdb add alpine-base musl-dev libc-dev linux-headers g++ && \
+  apk --arch armv7 -X http://dl-4.alpinelinux.org/alpine/edge/main -U --allow-untrusted --root /var/sysroots/armv7 --initdb add alpine-base musl-dev libc-dev linux-headers g++ && \
+  apk --arch aarch64 -X http://dl-4.alpinelinux.org/alpine/edge/main -U --allow-untrusted --root /var/sysroots/aarch64 --initdb add alpine-base musl-dev libc-dev linux-headers g++
 
-# build
+# get the llvm sources
 
-RUN cd /tmp/build ; \
-	ninja
+RUN mkdir -p /var/src && \
+  git clone --depth 1 https://github.com/llvm/llvm-project.git /var/src/llvm-project
+
+# copy cmake caches
+
+COPY caches/* /tmp/
+
+# build the toolchain
+
+RUN mkdir -p /var/build && \
+  cd /var/build && \
+  cmake -G Ninja -C /tmp/distribution.cmake -DCMAKE_INSTALL_PREFIX=/opt/toolchain /var/src/llvm-project/llvm && \
+  ninja distribution
 
 # install
 
-RUN cd /tmp/build; \
-	ninja install
+RUN cd /var/build && \
+  ninja install-distribution install-clang-cpp
 
-FROM alpine:3.10.2
+FROM alpine:3.10.3
 
-LABEL maintaainer="arto.kitula@gmail.com"
-LABEL description="ARM toolchain"
-
-ENV PATH="/opt/toolchain/bin:${PATH}"
+# copy freshly baked toolchain
 
 COPY --from=bob /opt/toolchain /opt/toolchain
 
-RUN apk add --no-cache $(scanelf --needed \
-	--nobanner --format '%n#p' --recursive /opt/toolchain \
-	| tr ',' '\n' \
-	| sort -u \
-	| awk 'system("[ -e /opt/toolchain/lib/" $1 " ]") == 0 { next } { print "so:" $1 }')
+# add build tools and toolchain dependencies
 
+RUN apk update && apk upgrade --no-cache && \
+  runDeps="$( \
+  scanelf --needed --nobanner --format '%n#p' --recursive /opt/toolchain \
+  | tr ',' '\n' \
+  | sort -u \
+  | awk 'system("[ -e /opt/toolchain/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+  )" && \
+  apk add --no-cache \
+  cmake \
+  make \
+  ninja \
+  $runDeps
