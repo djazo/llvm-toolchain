@@ -51,7 +51,7 @@ RUN mkdir -p /var/build && \
 # install
 
 RUN cd /var/build && \
-  ninja install-distribution install-clang-cpp
+  ninja install-distribution
 
 FROM alpine:3.10.3
 
