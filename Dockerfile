@@ -1,6 +1,6 @@
 # Dockerfile to build toolchain for alpine targets x86, armv7 and aarch64
 
-FROM alpine:3.10.3 AS bob
+FROM alpine:3.11.3 AS bob
 
 # start by adding basic toolchains for initial build
 
@@ -35,7 +35,7 @@ RUN mkdir -p /var/sysroots && \
 # get the llvm sources
 
 RUN mkdir -p /var/src && \
-  git clone --depth 1 https://github.com/llvm/llvm-project.git /var/src/llvm-project
+  git clone --depth 1 --single-branch -b release/10.x https://github.com/llvm/llvm-project.git /var/src/llvm-project
 
 # copy cmake caches
 
@@ -53,7 +53,7 @@ RUN mkdir -p /var/build && \
 RUN cd /var/build && \
   ninja install-distribution
 
-FROM alpine:3.10.3
+FROM alpine:3.11.3
 
 # copy freshly baked toolchain
 
