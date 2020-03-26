@@ -17,7 +17,7 @@ RUN apk update && \
   libffi-dev \
   libxml2-dev \
   linux-headers \
-  ninja \
+  samurai \
   openssl-dev \
   python3 \
   swig \
@@ -46,12 +46,12 @@ COPY caches/* /tmp/
 RUN mkdir -p /var/build && \
   cd /var/build && \
   cmake -G Ninja -C /tmp/distribution.cmake -DCMAKE_INSTALL_PREFIX=/opt/toolchain /var/src/llvm-project/llvm && \
-  ninja distribution
+  samu distribution
 
 # install
 
 RUN cd /var/build && \
-  ninja install-distribution
+  samu install-distribution
 
 FROM alpine:3.11.5
 
