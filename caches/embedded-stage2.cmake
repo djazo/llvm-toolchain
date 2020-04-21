@@ -137,7 +137,6 @@ set(LLVM_DISTRIBUTION_COMPONENTS
   llvm-objdump
   llvm-profdata
   llvm-ranlib
-  llvm-readelf
   llvm-size
   llvm-strip
   llvm-symbolizer
