@@ -1,5 +1,14 @@
-# arm-toolchain
+# llvm-toolchain
 
-CI ready ARM toolchain (clang based)
+LLVM toolchain for CI
 
-llvm, clang, lld, targeted for ARM and ARM64
+X86, ARM, AArch64 targets.
+
+## Alpine Linux targets and sysroots:
+
+- x86_64-alpine-linux-musl
+- aarch64-alpine-linux-musl
+- armv7-alpine-linux-musleabihf
+
+Runtimes have libc++ static.
+
