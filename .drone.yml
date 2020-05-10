@@ -12,14 +12,10 @@ steps:
     image: busybox
     commands:
       - mkdir -p /cache/${DRONE_REPO}/docker
+      - echo "11git,latest" > .tags
     volumes:
       - name: cache
         path: /cache
-
-  - name: tags
-    image: busybox
-    commands:
-      - echo "11git,latest" >> .tags
 
 - name: build-master
     image: plugins/docker
