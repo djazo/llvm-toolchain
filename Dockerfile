@@ -1,6 +1,6 @@
 # Dockerfile to build toolchain for alpine targets x86, armv7 and aarch64
 
-FROM alpine:3.11.5 AS bob
+FROM alpine:3.11.6 AS bob
 
 # start by adding basic toolchains for initial build
 
@@ -77,7 +77,7 @@ RUN mkdir -p /data/build && \
 RUN cd /data/build && \
   ninja stage2-install-distribution
 
-FROM alpine:3.11.5
+FROM alpine:3.11.6
 
 COPY --from=bob /opt/toolchain /opt/toolchain
 COPY --from=bob /data/sysroots /opt/sysroots
