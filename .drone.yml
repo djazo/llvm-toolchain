@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: docker
-name: arm-master
+name: llvm-master
 
 platform:
   os: linux
@@ -15,10 +15,16 @@ steps:
     volumes:
       - name: cache
         path: /cache
-  - name: build-master
+
+  - name: tags
+    image: busybox
+    commands:
+      - echo "11git,latest"> .tags
+
+- name: build-master
     image: plugins/docker
     settings:
-      repo: embeddedreality/arm-toolchain
+      repo: embeddedreality/llvm-toolchain
       use_cache: true
       username:
         from_secret: repo_username
