@@ -17,7 +17,7 @@ steps:
       - name: cache
         path: /cache
 
-- name: build-master
+  - name: build-master
     image: plugins/docker
     settings:
       repo: embeddedreality/llvm-toolchain
