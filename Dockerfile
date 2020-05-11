@@ -98,3 +98,7 @@ RUN apk add --no-cache \
   mkdir -p /opt/toolchain/etc &&\
   echo "/opt/toolchain/lib" >/opt/toolchain/etc/ld-musl-x86_64.path
 
+LABEL com.embeddedreality.image.maintainer="arto.kitula@gmail.com" \
+  com.embeddedreality.image.title="llvm-toolchain" \
+  com.embeddedreality.image.version="11git" \
+  com.embeddedreality.image.description="llvm-toolchain with alpine sysroots"
