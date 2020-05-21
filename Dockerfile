@@ -17,6 +17,7 @@ RUN apk add --no-cache \
   libffi-dev \
   libxml2-dev \
   linux-headers \
+  make \
   ninja \
   openssl-dev \
   python3 \
