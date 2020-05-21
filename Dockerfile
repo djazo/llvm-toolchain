@@ -46,11 +46,11 @@ RUN for _g in x86_64 armv7 aarch64; do \
 
 # get the llvm sources (release)
 
-# RUN mkdir -p /data/caches && \
-#   mkdir -p /data/src/llvm-project && \
-#   curl -Ls https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_PROJECT_VERSION}/llvm-project-${LLVM_PROJECT_VERSION}.tar.xz -o /tmp/llvm-project.tar.xz && \
-#   tar xJf /tmp/llvm-project.tar.xz --strip-components=1 -C /data/src/llvm-project && \
-#   rm /tmp/llvm-project.tar.xz
+RUN mkdir -p /data/caches && \
+  mkdir -p /data/src/llvm-project && \
+  curl -Ls https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_PROJECT_VERSION}/llvm-project-${LLVM_PROJECT_VERSION}.tar.xz -o /tmp/llvm-project.tar.xz && \
+  tar xJf /tmp/llvm-project.tar.xz --strip-components=1 -C /data/src/llvm-project && \
+  rm /tmp/llvm-project.tar.xz
 
 
 # binutils
@@ -66,22 +66,22 @@ RUN mkdir -p /data/src/binutils ; \
   make -j$(nproc) ; \
   make install
 
-# get the llvm sources (git )
+# # get the llvm sources (git )
 
-RUN mkdir -p /data/caches && \
-  mkdir -p /data/src && \
-  cd /data/src && \
-  git clone --depth 1 https://github.com/llvm/llvm-project.git
+# RUN mkdir -p /data/caches && \
+#   mkdir -p /data/src && \
+#   cd /data/src && \
+#   git clone --depth 1 https://github.com/llvm/llvm-project.git
 
 # copy cmake caches and patches
 
 COPY caches/* /tmp/
-COPY patches/* /tmp/
+# COPY patches/* /tmp/
 
-# patch!
+# # patch!
 
-RUN cd /data/src/llvm-project && \
-  patch -p1 </tmp/alpine.patch
+# RUN cd /data/src/llvm-project && \
+#   patch -p1 </tmp/alpine.patch
 
 # build the toolchain
 
