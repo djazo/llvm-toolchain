@@ -48,6 +48,20 @@ RUN for _g in x86_64 armv7 aarch64; do \
 #   tar xJf /tmp/llvm-project.tar.xz --strip-components=1 -C /data/src/llvm-project && \
 #   rm /tmp/llvm-project.tar.xz
 
+
+# binutils
+
+ENV BINUTILS_VERSION 2.34
+
+RUN mkdir -p /data/src/binutils ; \
+  curl -s -L -o /tmp/binutils.tar.bz2 "https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2" ; \
+  tar xjf /tmp/binutils.tar.bz2 --strip-components=1 -C /data/src/binutils ; \
+  mkdir -p /data/build-binutils ; \
+  cd /data/build-binutils ; \
+  /data/src/binutils/configure --prefix=/opt/toolchain --target=aarch64-alpine-linux-musl --disable-nls --disable-multilib --enable-gold=yes --enable-ld=yes ; \
+  make -j$(nproc) ; \
+  make install
+
 # get the llvm sources (git )
 
 RUN mkdir -p /data/caches && \
