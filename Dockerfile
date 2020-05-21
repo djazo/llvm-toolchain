@@ -7,8 +7,10 @@ FROM alpine:3.11.6 AS bob
 RUN apk add --no-cache \
   binutils \
   binutils-gold \
+  bison \
   cmake \
   curl \
+  flex \
   g++ \
   gcc \
   git \
@@ -22,6 +24,7 @@ RUN apk add --no-cache \
   openssl-dev \
   python3 \
   swig \
+  texinfo \
   xz-dev \
   z3-dev
 
