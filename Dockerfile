@@ -46,6 +46,7 @@ RUN for _g in x86_64 armv7 aarch64; do \
 
 # get the llvm sources (release)
 
+ENV LLVM_PROJECT_VERSION 10.0.0
 RUN mkdir -p /data/caches && \
   mkdir -p /data/src/llvm-project && \
   curl -Ls https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_PROJECT_VERSION}/llvm-project-${LLVM_PROJECT_VERSION}.tar.xz -o /tmp/llvm-project.tar.xz && \
