@@ -132,7 +132,6 @@ set(LLVM_TOOLCHAIN_TOOLS
   llvm-dwarfdump
   llvm-dwp
   llvm-lib
-  llvm-lit
   llvm-nm
   llvm-objcopy
   llvm-objdump
