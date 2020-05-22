@@ -77,12 +77,12 @@ RUN mkdir -p /data/src/binutils ; \
 # copy cmake caches and patches
 
 COPY caches/* /tmp/
-# COPY patches/* /tmp/
+COPY patches/* /tmp/
 
-# # patch!
+# patch!
 
-# RUN cd /data/src/llvm-project && \
-#   patch -p1 </tmp/alpine.patch
+RUN cd /data/src/llvm-project && \
+  patch -p1 </tmp/alpine10.patch
 
 # build the toolchain
 
