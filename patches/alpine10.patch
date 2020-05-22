@@ -28,7 +28,7 @@ index da197e476..d03321f99 100644
        "x86_64-pc-linux-gnu",    "x86_64-redhat-linux6E",
        "x86_64-redhat-linux",    "x86_64-suse-linux",
 diff --git a/llvm/cmake/modules/GetHostTriple.cmake b/llvm/cmake/modules/GetHostTriple.cmake
-index 6c15e2d48..b099ab57a 100644
+index 6c15e2d48..b1b06d3ea 100644
 --- a/llvm/cmake/modules/GetHostTriple.cmake
 +++ b/llvm/cmake/modules/GetHostTriple.cmake
 @@ -19,7 +19,8 @@ function( get_host_triple var )
@@ -37,7 +37,7 @@ index 6c15e2d48..b099ab57a 100644
        set(config_guess ${LLVM_MAIN_SRC_DIR}/cmake/config.guess)
 -      execute_process(COMMAND sh ${config_guess}
 +      #      execute_process(COMMAND sh ${config_guess}
-+      execute_process(COMMAND gcc -dumpmachine)
++      execute_process(COMMAND gcc -dumpmachine
          RESULT_VARIABLE TT_RV
          OUTPUT_VARIABLE TT_OUT
          OUTPUT_STRIP_TRAILING_WHITESPACE)
