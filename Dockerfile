@@ -54,18 +54,31 @@ RUN mkdir -p /data/caches && \
   rm /tmp/llvm-project.tar.xz
 
 
-# binutils
+# binutils for assembler
 
 ENV BINUTILS_VERSION 2.34
 
 RUN mkdir -p /data/src/binutils ; \
   curl -s -L -o /tmp/binutils.tar.bz2 "https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2" ; \
-  tar xjf /tmp/binutils.tar.bz2 --strip-components=1 -C /data/src/binutils ; \
-  mkdir -p /data/build-binutils ; \
-  cd /data/build-binutils ; \
-  /data/src/binutils/configure --prefix=/opt/toolchain --target=aarch64-alpine-linux-musl --disable-nls --disable-multilib --enable-gold=yes --enable-ld=yes ; \
-  make -j$(nproc) ; \
-  make install
+  tar xjf /tmp/binutils.tar.bz2 --strip-components=1 -C /data/src/binutils
+
+RUN mkdir -p /data/build-binutils-aarch64 ; \
+  cd /data/build-binutils-aarch64 ; \
+  /data/src/binutils/configure --prefix=/opt/toolchain --target=aarch64-alpine-linux-musl --disable-nls --disable-multilib ; \
+  make -j$(nproc) all-gas; \
+  make install-gas
+
+RUN mkdir -p /data/build-binutils-armv7 ; \
+  cd /data/build-binutils-armv7 ; \
+  /data/src/binutils/configure --prefix=/opt/toolchain --target=armv7-alpine-linux-musl --disable-nls --disable-multilib ; \
+  make -j$(nproc) all-gas; \
+  make install-gas
+
+RUN mkdir -p /data/build-binutils-x86_64 ; \
+  cd /data/build-binutils-x86_64 ; \
+  /data/src/binutils/configure --prefix=/opt/toolchain --target=x86_64-alpine-linux-musl --disable-nls --disable-multilib ; \
+  make -j$(nproc) all-gas; \
+  make install-gas
 
 # # get the llvm sources (git )
 
