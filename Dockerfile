@@ -1,6 +1,6 @@
 # Dockerfile to build toolchain for alpine targets x86, armv7 and aarch64
 
-FROM alpine:3.11.6 AS bob
+FROM alpine:3.12.0 AS bob
 
 # start by adding basic toolchains for initial build
 
@@ -44,15 +44,6 @@ RUN for _g in x86_64 armv7 aarch64; do \
   done ; \
   done
 
-# get the llvm sources (release)
-
-ENV LLVM_PROJECT_VERSION 10.0.0
-RUN mkdir -p /data/caches && \
-  mkdir -p /data/src/llvm-project && \
-  curl -Ls https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_PROJECT_VERSION}/llvm-project-${LLVM_PROJECT_VERSION}.tar.xz -o /tmp/llvm-project.tar.xz && \
-  tar xJf /tmp/llvm-project.tar.xz --strip-components=1 -C /data/src/llvm-project && \
-  rm /tmp/llvm-project.tar.xz
-
 
 # binutils for assembler
 
@@ -80,12 +71,21 @@ RUN mkdir -p /data/build-binutils-x86_64 ; \
   make -j$(nproc) all-gas; \
   make install-gas
 
-# # get the llvm sources (git )
+# get the llvm sources (git )
 
+RUN mkdir -p /data/caches && \
+  mkdir -p /data/src && \
+  cd /data/src && \
+  git clone --depth 1 https://github.com/llvm/llvm-project.git
+
+# # get the llvm sources (release)
+
+# ENV LLVM_PROJECT_VERSION 10.0.0
 # RUN mkdir -p /data/caches && \
-#   mkdir -p /data/src && \
-#   cd /data/src && \
-#   git clone --depth 1 https://github.com/llvm/llvm-project.git
+#   mkdir -p /data/src/llvm-project && \
+#   curl -Ls https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_PROJECT_VERSION}/llvm-project-${LLVM_PROJECT_VERSION}.tar.xz -o /tmp/llvm-project.tar.xz && \
+#   tar xJf /tmp/llvm-project.tar.xz --strip-components=1 -C /data/src/llvm-project && \
+#   rm /tmp/llvm-project.tar.xz
 
 # copy cmake caches and patches
 
@@ -95,7 +95,7 @@ COPY patches/* /tmp/
 # patch!
 
 RUN cd /data/src/llvm-project && \
-  patch -p1 </tmp/alpine10.patch
+  patch -p1 </tmp/alpine.patch
 
 # build the toolchain
 
@@ -109,7 +109,7 @@ RUN mkdir -p /data/build && \
 RUN cd /data/build && \
   ninja stage2-install-distribution
 
-FROM alpine:3.11.6
+FROM alpine:3.12.0
 
 COPY --from=bob /opt/toolchain /opt/toolchain
 COPY --from=bob /data/sysroots /opt/sysroots
