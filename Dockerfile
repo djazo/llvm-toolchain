@@ -22,6 +22,7 @@ RUN apk add --no-cache \
   make \
   ninja \
   openssl-dev \
+  patch \
   python3 \
   swig \
   texinfo \
