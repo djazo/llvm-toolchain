@@ -133,6 +133,7 @@ set(LLVM_TOOLCHAIN_TOOLS
   llvm-ar
   llvm-cov
   llvm-cxxfilt
+  llvm-config
   llvm-dwarfdump
   llvm-dwp
   llvm-lib
