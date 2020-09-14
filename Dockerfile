@@ -63,7 +63,7 @@ RUN for _g in x86_64 armv7 aarch64 ; do \
 
 # binutils for assembler
 
-ENV BINUTILS_VERSION 2.34
+ENV BINUTILS_VERSION 2.35
 
 RUN mkdir -p /data/src/binutils ; \
   curl -s -L -o /tmp/binutils.tar.bz2 "https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2" ; \
@@ -100,15 +100,6 @@ RUN mkdir -p /data/caches && \
   cd /data/src && \
   git clone --depth 1 https://github.com/llvm/llvm-project.git
 
-# # get the llvm sources (release)
-
-# ENV LLVM_PROJECT_VERSION 10.0.0
-# RUN mkdir -p /data/caches && \
-#   mkdir -p /data/src/llvm-project && \
-#   curl -Ls https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_PROJECT_VERSION}/llvm-project-${LLVM_PROJECT_VERSION}.tar.xz -o /tmp/llvm-project.tar.xz && \
-#   tar xJf /tmp/llvm-project.tar.xz --strip-components=1 -C /data/src/llvm-project && \
-#   rm /tmp/llvm-project.tar.xz
-
 # copy cmake caches and patches
 
 COPY caches/* /tmp/
@@ -131,7 +122,7 @@ RUN mkdir -p /data/build && \
 # install
 
 RUN cd /data/build && \
-  ninja stage2-install-distribution
+  ninja stage2-install-distribution-stripped
 
 FROM alpine:3.12.0
 
