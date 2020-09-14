@@ -68,10 +68,10 @@ foreach(target ${l_targets})
 
 endforeach()
 
-
 set(SYSROOT_x86_64 "/data/sysroots/x86_64/")
 set(SYSROOT_aarch64 "/data/sysroots/aarch64/")
 set(SYSROOT_armv7 "/data/sysroots/armv7/")
+set(SYSROOT_arm "/data/sysroots/raspberryos/")
 
 set(l_targets aarch64-alpine-linux-musl;armv7-alpine-linux-musleabihf)
 
@@ -97,9 +97,12 @@ foreach(target ${l_targets})
   set(RUNTIMES_${target}_CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=lld" CACHE STRING "")
   set(RUNTIMES_${target}_CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=lld" CACHE STRING "")
   set(RUNTIMES_${target}_CMAKE_EXE_LINKER_FLAG "-fuse-ld=lld" CACHE STRING "")
-  set(RUNTIMES_${target}_COMPILER_RT_BUILD_LIBFUZZER OFF CACHE BOOL "")
-  set(RUNTIMES_${target}_COMPILER_RT_BUILD_SANITIZERS OFF CACHE BOOL "")
-  set(RUNTIMES_${target}_COMPILER_RT_BUILD_XRAY OFF CACHE BOOL "")
+
+  if(NOT ("$ARCH" STREQUAL "arm"))
+    set(RUNTIMES_${target}_COMPILER_RT_BUILD_LIBFUZZER OFF CACHE BOOL "")
+    set(RUNTIMES_${target}_COMPILER_RT_BUILD_SANITIZERS OFF CACHE BOOL "")
+    set(RUNTIMES_${target}_COMPILER_RT_BUILD_XRAY OFF CACHE BOOL "")
+  endif()
   set(RUNTIMES_${target}_COMPILER_RT_USE_BUILTINS_LIBRARY ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBUNWIND_USE_COMPILER_RT ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBUNWIND_ENABLE_SHARED OFF CACHE BOOL "")
