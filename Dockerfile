@@ -71,12 +71,6 @@ RUN mkdir -p /data/build-binutils-x86_64 ; \
   make -j$(nproc) all-gas; \
   make install-gas
 
-RUN mkdir -p /data/build-binutils-arm ; \
-  cd /data/build-binutils-arm ; \
-  /data/src/binutils/configure --prefix=/opt/toolchain --target=arm-linux-gnueabihf --disable-nls --disable-multilib ; \
-  make -j$(nproc) all-gas; \
-  make install-gas
-
 # purge asm manuals.
 
 RUN rm -rf /opt/toolchain/share
