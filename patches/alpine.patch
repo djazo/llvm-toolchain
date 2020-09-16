@@ -35,6 +35,19 @@ index 7f7a39567..11987ebdf 100644
        "i586-gnu",             "i686-gnu"};
  
    static const char *const MIPSLibDirs[] = {"/lib"};
+diff --git a/llvm/cmake/modules/GetHostTriple.cmake b/llvm/cmake/modules/GetHostTriple.cmake
+index a5f033c11..a17d4a102 100644
+--- a/llvm/cmake/modules/GetHostTriple.cmake
++++ b/llvm/cmake/modules/GetHostTriple.cmake
+@@ -28,7 +28,7 @@ function( get_host_triple var )
+       message(WARNING "unable to determine host target triple")
+     else()
+       set(config_guess ${LLVM_MAIN_SRC_DIR}/cmake/config.guess)
+-      execute_process(COMMAND sh ${config_guess}
++      execute_process(COMMAND gcc -dumpmachine
+         RESULT_VARIABLE TT_RV
+         OUTPUT_VARIABLE TT_OUT
+         OUTPUT_STRIP_TRAILING_WHITESPACE)
 diff --git a/llvm/lib/Support/Unix/Memory.inc b/llvm/lib/Support/Unix/Memory.inc
 index be88e7db1..40662da82 100644
 --- a/llvm/lib/Support/Unix/Memory.inc
