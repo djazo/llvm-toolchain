@@ -1,72 +1,42 @@
 diff --git a/clang/lib/Driver/ToolChains/Gnu.cpp b/clang/lib/Driver/ToolChains/Gnu.cpp
-index 9a340142a24..0282a747846 100644
+index 7f7a39567..11987ebdf 100644
 --- a/clang/lib/Driver/ToolChains/Gnu.cpp
 +++ b/clang/lib/Driver/ToolChains/Gnu.cpp
-@@ -2002,6 +2002,7 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
-   // lifetime or initialization issues.
+@@ -2044,6 +2044,7 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
    static const char *const AArch64LibDirs[] = {"/lib64", "/lib"};
    static const char *const AArch64Triples[] = {
-+      "aarch64-alpine-linux-musl", "aarch64-linux-musl",
        "aarch64-none-linux-gnu", "aarch64-linux-gnu", "aarch64-redhat-linux",
++      "aarch64-linux-musl"
        "aarch64-suse-linux", "aarch64-linux-android"};
    static const char *const AArch64beLibDirs[] = {"/lib"};
-@@ -2012,6 +2013,8 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
-   static const char *const ARMTriples[] = {"arm-linux-gnueabi",
-                                            "arm-linux-androideabi"};
+   static const char *const AArch64beTriples[] = {"aarch64_be-none-linux-gnu",
+@@ -2055,6 +2056,8 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
    static const char *const ARMHFTriples[] = {"arm-linux-gnueabihf",
-+                                             "armv7-alpine-linux-musleabihf",
-+                                             "armv7-linux-musleabihf",
                                               "armv7hl-redhat-linux-gnueabi",
                                               "armv6hl-suse-linux-gnueabi",
++                                             "arm-linux-musleabihf",
++                                             "armv7l-linux-musleabihf",
                                               "armv7hl-suse-linux-gnueabi"};
-@@ -2026,6 +2029,7 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
- 
-   static const char *const X86_64LibDirs[] = {"/lib64", "/lib"};
-   static const char *const X86_64Triples[] = {
-+      "x86_64-alpine-linux-musl", "x86_64-linux-musl",
-       "x86_64-linux-gnu",       "x86_64-unknown-linux-gnu",
-       "x86_64-pc-linux-gnu",    "x86_64-redhat-linux6E",
+   static const char *const ARMebLibDirs[] = {"/lib"};
+   static const char *const ARMebTriples[] = {"armeb-linux-gnueabi",
+@@ -2072,6 +2075,7 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
        "x86_64-redhat-linux",    "x86_64-suse-linux",
-diff --git a/llvm/cmake/modules/GetHostTriple.cmake b/llvm/cmake/modules/GetHostTriple.cmake
-index 251ca1a32b1..d10af1302b1 100644
---- a/llvm/cmake/modules/GetHostTriple.cmake
-+++ b/llvm/cmake/modules/GetHostTriple.cmake
-@@ -26,7 +26,8 @@ function( get_host_triple var )
-       message(WARNING "unable to determine host target triple")
-     else()
-       set(config_guess ${LLVM_MAIN_SRC_DIR}/cmake/config.guess)
--      execute_process(COMMAND sh ${config_guess}
-+      #      execute_process(COMMAND sh ${config_guess}
-+      execute_process(COMMAND gcc -dumpmachine
-         RESULT_VARIABLE TT_RV
-         OUTPUT_VARIABLE TT_OUT
-         OUTPUT_STRIP_TRAILING_WHITESPACE)
-diff --git a/llvm/include/llvm/ADT/Triple.h b/llvm/include/llvm/ADT/Triple.h
-index fa437a57520..ffaf921974a 100644
---- a/llvm/include/llvm/ADT/Triple.h
-+++ b/llvm/include/llvm/ADT/Triple.h
-@@ -137,6 +137,7 @@ public:
-   enum VendorType {
-     UnknownVendor,
+       "x86_64-manbo-linux-gnu", "x86_64-linux-gnu",
+       "x86_64-slackware-linux", "x86_64-unknown-linux",
++      "x86_64-linux-musl",
+       "x86_64-amazon-linux",    "x86_64-linux-android"};
+   static const char *const X32LibDirs[] = {"/libx32"};
+   static const char *const X86LibDirs[] = {"/lib32", "/lib"};
+@@ -2081,6 +2085,7 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
+       "i586-redhat-linux",    "i386-redhat-linux",     "i586-suse-linux",
+       "i486-slackware-linux", "i686-montavista-linux", "i586-linux-gnu",
+       "i686-linux-android",   "i386-gnu",              "i486-gnu",
++      "i686-linux-musl",
+       "i586-gnu",             "i686-gnu"};
  
-+    Alpine,
-     Apple,
-     PC,
-     SCEI,
-diff --git a/llvm/lib/Support/Triple.cpp b/llvm/lib/Support/Triple.cpp
-index da6b877a850..841886a289c 100644
---- a/llvm/lib/Support/Triple.cpp
-+++ b/llvm/lib/Support/Triple.cpp
-@@ -157,6 +157,7 @@ StringRef Triple::getVendorTypeName(VendorType Kind) {
-   switch (Kind) {
-   case UnknownVendor: return "unknown";
- 
-+  case Alpine: return "alpine";
-   case AMD: return "amd";
-   case Apple: return "apple";
-   case BGP: return "bgp";
+   static const char *const MIPSLibDirs[] = {"/lib"};
 diff --git a/llvm/lib/Support/Unix/Memory.inc b/llvm/lib/Support/Unix/Memory.inc
-index be88e7db140..b27a6d8aba6 100644
+index be88e7db1..40662da82 100644
 --- a/llvm/lib/Support/Unix/Memory.inc
 +++ b/llvm/lib/Support/Unix/Memory.inc
 @@ -58,7 +58,7 @@ static int getPosixProtectionFlags(unsigned Flags) {
@@ -74,7 +44,7 @@ index be88e7db140..b27a6d8aba6 100644
    case llvm::sys::Memory::MF_EXEC:
  #if (defined(__FreeBSD__) || defined(__POWERPC__) || defined (__ppc__) || \
 -     defined(_POWER) || defined(_ARCH_PPC))
-+     defined(_POWER) || defined(_ARCH_PPC) || (defined(__linux__) && defined(__aarch64__)))
++  defined(_POWER) || defined(_ARCH_PPC) || (defined(__linux__) && defined(__aarch64__)))
      // On PowerPC, having an executable page that has no read permission
      // can have unintended consequences.  The function InvalidateInstruction-
      // Cache uses instructions dcbf and icbi, both of which are treated by

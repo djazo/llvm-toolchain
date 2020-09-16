@@ -122,7 +122,7 @@ RUN mkdir -p /data/build && \
 # install
 
 RUN cd /data/build && \
-  ninja stage2-install-distribution-stripped
+  ninja stage2-install-distribution
 
 FROM alpine:3.12.0
 

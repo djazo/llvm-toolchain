@@ -20,8 +20,8 @@ set(LLVM_ENABLE_LLD ON CACHE BOOL "")
 
 set(ENABLE_LINKER_BUILD_ID ON CACHE BOOL "")
 
-set(CLANG_DEFAULT_RTLIB libgcc CACHE STRING "")
-set(CLANG_DFEAULT_CXX_STDLIB libstdc++ CACHE STRING "")
+set(CLANG_DEFAULT_RTLIB compiler-rt CACHE STRING "")
+set(CLANG_DFEAULT_CXX_STDLIB libc++ CACHE STRING "")
 set(CLANG_DEFAULT_LINKER lld CACHE STRING "")
 set(CLANG_DEFAULT_OBJCOPY llvm-objcopy CACHE STRING "")
 
@@ -71,7 +71,6 @@ endforeach()
 set(SYSROOT_x86_64 "/data/sysroots/x86_64/")
 set(SYSROOT_aarch64 "/data/sysroots/aarch64/")
 set(SYSROOT_armv7 "/data/sysroots/armv7/")
-set(SYSROOT_arm "/data/sysroots/raspberryos/")
 
 set(l_targets aarch64-alpine-linux-musl;armv7-alpine-linux-musleabihf)
 
@@ -97,12 +96,9 @@ foreach(target ${l_targets})
   set(RUNTIMES_${target}_CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=lld" CACHE STRING "")
   set(RUNTIMES_${target}_CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=lld" CACHE STRING "")
   set(RUNTIMES_${target}_CMAKE_EXE_LINKER_FLAG "-fuse-ld=lld" CACHE STRING "")
-
-  if(NOT ("$ARCH" STREQUAL "arm"))
-    set(RUNTIMES_${target}_COMPILER_RT_BUILD_LIBFUZZER OFF CACHE BOOL "")
-    set(RUNTIMES_${target}_COMPILER_RT_BUILD_SANITIZERS OFF CACHE BOOL "")
-    set(RUNTIMES_${target}_COMPILER_RT_BUILD_XRAY OFF CACHE BOOL "")
-  endif()
+  set(RUNTIMES_${target}_COMPILER_RT_BUILD_LIBFUZZER OFF CACHE BOOL "")
+  set(RUNTIMES_${target}_COMPILER_RT_BUILD_SANITIZERS OFF CACHE BOOL "")
+  set(RUNTIMES_${target}_COMPILER_RT_BUILD_XRAY OFF CACHE BOOL "")
   set(RUNTIMES_${target}_COMPILER_RT_USE_BUILTINS_LIBRARY ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBUNWIND_USE_COMPILER_RT ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBUNWIND_ENABLE_SHARED OFF CACHE BOOL "")
@@ -124,7 +120,7 @@ endforeach()
 set(LLVM_BUILTIN_TARGETS "${BUILTIN_TARGETS}" CACHE STRING "")
 set(LLVM_RUNTIME_TARGETS "${RUNTIME_TARGETS}" CACHE STRING "")
 
-set(LLVM_INSTALL_TOOLCHAIN_ONLY ON CACHE BOOL "")
+# set(LLVM_INSTALL_TOOLCHAIN_ONLY ON CACHE BOOL "")
 
 set(LLVM_TOOLCHAIN_TOOLS
   dsymutil
@@ -148,6 +144,7 @@ set(LLVM_TOOLCHAIN_TOOLS
   llvm-strings
   llvm-strip
   llvm-symbolizer
+  cmake-exports
   opt
   sancov
   CACHE STRING "")
