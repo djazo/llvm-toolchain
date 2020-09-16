@@ -1,17 +1,4 @@
 # Dockerfile to build toolchain for alpine targets x86, armv7 and aarch64
-
-# first we do raspberry os sysroot
-FROM debian:buster-slim AS wendy
-
-RUN set -eux ; apt-get update && apt-get -y install debootstrap ;\
-  mkdir /raspberryos ; \
-  debootstrap --arch=armhf --variant=minbase --no-check-gpg buster /raspberryos http://archive.raspbian.org/raspbian ; \
-  chroot /raspberryos /bin/bash -c "apt-get update && apt-get -y install symlinks gcc g++" ; \
-  chroot /raspberryos /bin/bash -c "symlinks -c -r /usr" ; \
-  for _f in bin boot dev etc home media mnt opt proc root run sbin srv sys tmp var usr/bin usr/sbin usr/libexec usr/share usr/games usr/local usr/lib/apt usr/lib/bfd-plugins usr/lib/compat-ld usr/lib/cpp usr/lib/dpkg usr/lib/gnupg usr/lib/gnupg2 usr/lib/gold-ld usr/lib/init usr/lib/locale usr/lib/lsb usr/lib/lsb usr/lib/mime usr/lib/os-release usr/lib/sasl2 usr/lib/systemd usr/lib/terminfo usr/lib/tmpfiles.d usr/lib/udev; do \
-  rm -rf /raspberryos/$_f ; \
-  done
-
 FROM alpine:3.12.0 AS bob
 
 # start by adding basic toolchains for initial build
@@ -50,8 +37,6 @@ RUN mkdir -p /data/sysroots && \
   apk --arch armv7 -X http://dl-cdn.alpinelinux.org/alpine/v3.11/main -U --allow-untrusted --root /data/sysroots/armv7 --initdb add alpine-base musl-dev libc-dev linux-headers g++ && \
   apk --arch aarch64 -X http://dl-cdn.alpinelinux.org/alpine/v3.11/main -U --allow-untrusted --root /data/sysroots/aarch64 --initdb add alpine-base musl-dev libc-dev linux-headers g++
 
-COPY --from=wendy /raspberryos /data/sysroots/raspberryos
-
 # purge alpine sysroots
 
 RUN for _g in x86_64 armv7 aarch64 ; do \
@@ -59,7 +44,6 @@ RUN for _g in x86_64 armv7 aarch64 ; do \
   rm -rf /data/sysroots/$_g/$_f ; \
   done ; \
   done
-
 
 # binutils for assembler
 
@@ -92,6 +76,10 @@ RUN mkdir -p /data/build-binutils-arm ; \
   /data/src/binutils/configure --prefix=/opt/toolchain --target=arm-linux-gnueabihf --disable-nls --disable-multilib ; \
   make -j$(nproc) all-gas; \
   make install-gas
+
+# purge asm manuals.
+
+RUN rm -rf /opt/toolchain/share
 
 # get the llvm sources (git )
 
@@ -138,8 +126,10 @@ RUN apk add --no-cache \
   libffi \
   libxml2 \
   make \
+  meson \
   ninja \
   openssl \
+  python3 \
   xz-libs \
   z3 && \
   mkdir -p /opt/toolchain/etc &&\
