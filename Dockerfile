@@ -109,26 +109,25 @@ RUN cd /data/build ; \
   ninja stage2-install-distribution
 
 RUN mkdir -p /opt/toolchain/etc ; \
-  echo "/opt/toolchain/lib" >/opt/toolchain/etc/ld-musl-x86_64.path ; \
+  echo "/opt/toolchain/lib\n/opt/toolchain/lib/x86_64-alpine-linux-musl/c++" >/opt/toolchain/etc/ld-musl-x86_64.path ; \
   mv /data/sysroots /opt/toolchain/sysroots
 
 FROM alpine:3.12.0
 
 COPY --from=bob /opt/toolchain /opt/toolchain
 
-ENV PATH="${PATH}:/opt/toolchain/bin:/opt/avr-toolchain/bin"
+ENV PATH="${PATH}:/opt/toolchain/bin"
 
 RUN apk add --no-cache \
   cmake \
   git \
+  libatomic \
+  libedit \
+  libxml2 \
   make \
   ninja \
   python3 \
-  $(scanelf --needed \
-  --nobanner --format '%n#p' --recursive /opt/toolchain \
-  | tr ',' '\n' \
-  | sort -u \
-  | awk 'system("[ -e /opt/toolchain/lib/" $1 " ]") == 0 { next } { print "so:" $1 }')
+  meson
 
 LABEL com.embeddedreality.image.maintainer="arto.kitula@gmail.com" \
   com.embeddedreality.image.title="llvm-toolchain" \
