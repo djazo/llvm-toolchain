@@ -17,7 +17,7 @@ set(LLVM_ENABLE_LIBCXX ON CACHE BOOL "")
 set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR ON CACHE BOOL "")
 set(LLVM_ENABLE_LLD ON CACHE BOOL "")
 set(LLVM_INSTALL_BINUTILS_SYMLINKS ON CACHE BOOL "")
-# set(LLVM_ENABLE_LTO ON CACHE BOOL "")
+set(LLVM_ENABLE_LTO ON CACHE BOOL "")
 
 set(ENABLE_LINKER_BUILD_ID ON CACHE BOOL "")
 
@@ -70,7 +70,6 @@ foreach(target ${l_targets})
 
 endforeach()
 
-set(SYSROOT_x86_64 "/data/sysroots/x86_64/")
 set(SYSROOT_aarch64 "/data/sysroots/aarch64/")
 set(SYSROOT_armv7 "/data/sysroots/armv7/")
 
@@ -101,6 +100,7 @@ foreach(target ${l_targets})
   set(RUNTIMES_${target}_COMPILER_RT_BUILD_LIBFUZZER OFF CACHE BOOL "")
   set(RUNTIMES_${target}_COMPILER_RT_BUILD_SANITIZERS OFF CACHE BOOL "")
   set(RUNTIMES_${target}_COMPILER_RT_BUILD_XRAY OFF CACHE BOOL "")
+  set(RUNTIMES_${target}_COMPILER_RT_BUILD_MEMPROF OFF CACHE BOOL "")
   set(RUNTIMES_${target}_COMPILER_RT_USE_BUILTINS_LIBRARY ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBUNWIND_USE_COMPILER_RT ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBUNWIND_ENABLE_SHARED OFF CACHE BOOL "")
@@ -129,6 +129,7 @@ set(LLVM_TOOLCHAIN_TOOLS
   llc
   llvm-addr2line
   llvm-ar
+  llvm-as
   llvm-cov
   llvm-cxxfilt
   llvm-config
