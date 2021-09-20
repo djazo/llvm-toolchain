@@ -31,12 +31,13 @@ RUN apk add --no-cache \
 
 
 RUN mkdir -p /data/sysroots ; \
-  apk --arch armv7 -X http://dl-cdn.alpinelinux.org/alpine/v3.13/main -U --allow-untrusted --root /data/sysroots/armv7 --initdb add alpine-base musl-dev libc-dev linux-headers g++ ; \
-  apk --arch aarch64 -X http://dl-cdn.alpinelinux.org/alpine/v3.13/main -U --allow-untrusted --root /data/sysroots/aarch64 --initdb add alpine-base musl-dev libc-dev linux-headers g++
+  apk --arch armv7 -X http://dl-cdn.alpinelinux.org/alpine/edge/main -U --allow-untrusted --root /data/sysroots/armv7 --initdb add alpine-base musl-dev libc-dev linux-headers zlib-dev gcc; \
+  apk --arch aarch64 -X http://dl-cdn.alpinelinux.org/alpine/edge/main -U --allow-untrusted --root /data/sysroots/aarch64 --initdb add alpine-base musl-dev libc-dev linux-headers zlib-dev gcc;\
+  apk --arch x86_64 -X http://dl-cdn.alpinelinux.org/alpine/edge/main -U --allow-untrusted --root /data/sysroots/x86_64 --initdb add alpine-base musl-dev libc-dev linux-headers zlib-dev gcc
 
 # purge alpine sysroots
 
-RUN for _g in armv7 aarch64 ; do \
+RUN for _g in armv7 aarch64 x86_64; do \
   for _f in bin dev etc home media mnt opt proc root run sbin srv sys tmp var usr/bin usr/sbin usr/libexec usr/share usr/$_g*; do \
   rm -rf /data/sysroots/$_g/$_f ; \
   done ; \
