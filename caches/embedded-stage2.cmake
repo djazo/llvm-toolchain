@@ -15,7 +15,10 @@ set(LLVM_ENABLE_RTTI ON CACHE BOOL "")
 set(LLVM_ENABLE_EH ON CACHE BOOL "")
 set(LLVM_ENABLE_LIBCXX ON CACHE BOOL "")
 set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR ON CACHE BOOL "")
-set(LLVM_ENABLE_LLD ON CACHE BOOL "")
+if(NOT APPLE)
+  set(LLVM_ENABLE_LLD ON CACHE BOOL "")
+endif()
+
 set(LLVM_INSTALL_BINUTILS_SYMLINKS ON CACHE BOOL "")
 set(LLVM_ENABLE_LTO ON CACHE BOOL "")
 
@@ -23,8 +26,10 @@ set(ENABLE_LINKER_BUILD_ID ON CACHE BOOL "")
 
 set(CLANG_DEFAULT_RTLIB compiler-rt CACHE STRING "")
 set(CLANG_DFEAULT_CXX_STDLIB libc++ CACHE STRING "")
-set(CLANG_DEFAULT_LINKER lld CACHE STRING "")
-set(CLANG_DEFAULT_OBJCOPY llvm-objcopy CACHE STRING "")
+if(NOT APPLE)
+  set(CLANG_DEFAULT_LINKER lld CACHE STRING "")
+  set(CLANG_DEFAULT_OBJCOPY llvm-objcopy CACHE STRING "")
+endif()
 set(CLANG_CONFIG_FILE_SYSTEM_DIR ${CMAKE_INSTALL_PREFIX}/etc)
 
 set(COMPILER_RT_DEFAULT_TARGET_ONLY ON CACHE BOOL "")
@@ -40,7 +45,7 @@ set(LIBCXX_USE_COMPILER_RT ON CACHE BOOL "")
 
 
 set(l_targets "default")
-
+if(NOT APPLE)
 foreach(target ${l_targets})
   list(APPEND BUILTIN_TARGETS "${target}")
   set(BUILTINS_${target}_CMAKE_SYSTEM_NAME Linux CACHE STRING "")
@@ -67,13 +72,20 @@ foreach(target ${l_targets})
   set(RUNTIMES_${target}_LIBCXX_ABI_VERSION 2 CACHE STRING "")
   set(RUNTIMES_${target}_LIBCXX_USE_COMPILER_RT ON CACHE BOOL "")
   set(RUNTIMES_${target}_LIBCXX_ENABLE_EXCEPTIONS ON CACHE BOOL "")
-
 endforeach()
+else()
+  list(APPEND BUILTIN_TARGETS "default")
+  list(APPEND RUNTIME_TARGETS "default")
+  set(RUNTIMES_default_COMPILER_RT_ENABLE_IOS OFF CACHE BOOL "")
+  set(RUNTIMES_default_COMPILER_RT_ENABLE_TVOS OFF CACHE BOOL "")
+  set(RUNTIMES_default_COMPILER_RT_ENAVLE_WATCHOS OFF CACHE BOOL "")
+endif()
 
-set(SYSROOT_aarch64 "/data/sysroots/aarch64/")
-set(SYSROOT_armv7 "/data/sysroots/armv7/")
+set(SYSROOT_aarch64 "${SYSROOTDIR}/aarch64/")
+set(SYSROOT_armv7 "${SYSROOTDIR}/armv7/")
+set(SYSROOT_x86_64 "${SYSROOTDIR}/x86_64/")
 
-set(l_targets aarch64-alpine-linux-musl;armv7-alpine-linux-musleabihf)
+set(l_targets x86_64-alpine-linux-musl;aarch64-alpine-linux-musl;armv7-alpine-linux-musleabihf)
 
 foreach(target ${l_targets})
   string(REGEX MATCH "^([a-z0-9_]*)" ARCH "${target}")
